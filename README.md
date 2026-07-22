@@ -1,6 +1,6 @@
 # agents-prompts
 
-統一管理給 AI agent 的全域指令檔，用 `sync.py` 一键同步到 Codex 和 Claude 的全域設定位置。
+統一管理給 AI agent 的全域指令檔，用 `sync.py` 一鍵同步到 Codex 和 Claude 的全域設定位置。
 
 ## 檔案結構
 
