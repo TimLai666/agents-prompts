@@ -5,6 +5,7 @@ sync.py — 把 AGENTS-content.md 同步到全域設定檔位置。
 目標:
   ~/.codex/AGENTS.md
   ~/.claude/CLAUDE.md
+  ~/.pi/agent/AGENTS.md
 
 用法:
   python sync.py              同步檔案
@@ -90,7 +91,7 @@ def sync_one(
     show_diff: bool,
 ) -> str:
     """同步一個檔案。回傳: identical / updated / would_update。"""
-    label = f"~/{target.parent.name}/{target.name}"
+    label = f"~/{target.parent.relative_to(Path.home()).as_posix()}/{target.name}"
     print(f"{BOLD}{label}{RESET}")
 
     src_text = normalize(source.read_text("utf-8"))
@@ -122,7 +123,7 @@ def sync_one(
 
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(src_text, encoding="utf-8")
-    print(f"  {GREEN}✓ 已更新{RESET}")
+    print(f"  {GREEN}[OK] 已更新{RESET}")
     return "updated"
 
 
@@ -150,6 +151,7 @@ def main():
     targets = [
         (home / ".codex" / "AGENTS.md",  home / ".codex" / "backups"),
         (home / ".claude" / "CLAUDE.md", home / ".claude" / "backups"),
+        (home / ".pi" / "agent" / "AGENTS.md", home / ".pi" / "agent" / "backups"),
     ]
 
     print(f"{BOLD}同步 AGENTS-content.md{RESET}")
@@ -158,6 +160,10 @@ def main():
 
     results = []
     for target, backup_dir in targets:
+        if not target.parent.exists():
+            print(f"  {DIM}略過 {target.parent}：該工具未安裝{RESET}")
+            print()
+            continue
         results.append(sync_one(
             source, target, backup_dir,
             dry_run=args.dry_run,
